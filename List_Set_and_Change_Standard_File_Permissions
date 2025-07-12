@@ -1,0 +1,169 @@
+🐧 Linux File & Directory Permissions – Summary Notes
+1. 📁 Ownership Basics
+Every file/directory is owned by:
+
+User (e.g., aaron)
+
+Group (e.g., family)
+
+Use ls -l to list file permissions and ownership.
+
+bash
+Copy
+Edit
+ls -l
+Example:
+css
+Copy
+Edit
+-r--rw---- 1 aaron family 12345 Jul 12 14:03 family_dog.jpg
+First column: permissions (-r--rw----)
+
+Third column: owner (aaron)
+
+Fourth column: group (family)
+
+2. 🔄 Changing Ownership
+Change group of a file/directory:
+bash
+Copy
+Edit
+chgrp <group_name> <file>
+# Example:
+chgrp sudo family_dog.jpg
+✅ You can only change to groups you’re a member of.
+✅ root can change group to any.
+
+Change owner of a file/directory:
+bash
+Copy
+Edit
+sudo chown <new_owner> <file>
+# Example:
+sudo chown jane family_dog.jpg
+Change both owner and group:
+bash
+Copy
+Edit
+sudo chown <new_owner>:<new_group> <file>
+# Example:
+sudo chown aaron:family family_dog.jpg
+3. 🔐 Understanding Permissions
+Format:
+pgsql
+Copy
+Edit
+[Type] [User][Group][Others]
+Example: -rw-rw-r-- (file)
+         drwxr-x--x (directory)
+Permission characters:
+Symbol	Meaning
+r	read
+w	write
+x	execute
+-	no permission
+
+For Files:
+r: read file contents
+
+w: modify file
+
+x: execute file (script/program)
+
+For Directories:
+r: list directory contents
+
+w: create/delete files inside
+
+x: cd into the directory
+
+Usually for directories, both r and x are needed to be usable.
+
+4. ⚙️ Permission Evaluation Order
+Linux checks in this order:
+
+Owner permissions
+
+Group permissions
+
+Other permissions
+
+First match is applied, no fallback to next.
+
+5. ✏️ Changing Permissions with chmod
+Symbolic Format:
+bash
+Copy
+Edit
+chmod [ugoa][+-=][rwx] <file>
+u = user (owner)
+
+g = group
+
+o = others
+
+a = all (user + group + others)
+
+Add permission:
+bash
+Copy
+Edit
+chmod u+w file.txt    # add write for user
+chmod g+rx file.txt   # add read+execute for group
+Remove permission:
+bash
+Copy
+Edit
+chmod o-r file.txt    # remove read for others
+chmod g-w file.txt    # remove write for group
+Set exact permissions:
+bash
+Copy
+Edit
+chmod u=rw file.txt   # user gets only read+write
+chmod g=r file.txt    # group gets only read
+chmod o= file.txt     # others get no permissions
+Multiple changes:
+bash
+Copy
+Edit
+chmod u=rw,g=r,o= file.txt
+6. 🔢 Octal (Numeric) Permissions
+rwx combo	Binary	Octal
+---	000	0
+--x	001	1
+-w-	010	2
+-wx	011	3
+r--	100	4
+r-x	101	5
+rw-	110	6
+rwx	111	7
+
+Example combinations:
+chmod 644 file.txt → rw-r--r--
+
+chmod 755 script.sh → rwxr-xr-x
+
+chmod 700 secret.txt → rwx------
+
+Breakdown of chmod 640 file.txt:
+User: rw- = 6
+
+Group: r-- = 4
+
+Others: --- = 0
+
+bash
+Copy
+Edit
+chmod 640 family_dog.jpg
+7. 🧠 Quick Tips
+Use stat filename to see octal permissions.
+
+Use groups to check current user's groups.
+
+Only root can chown to another user.
+
+Use chmod with +, -, or = for fine control.
+
+Octal is faster for bulk scripting or precision.
