@@ -1,0 +1,133 @@
+🔍 Regular Expressions (Regex) with grep – Super Simple Notes
+🧠 What is Regex?
+Regex = Rules for finding patterns in text.
+Example: Find all IP addresses or lines starting with a comment.
+
+🛠 Basic Regex with grep
+🔤 General Syntax:
+bash
+Copy
+Edit
+grep [OPTIONS] 'PATTERN' filename
+👉 Always use single quotes ' ' around pattern to avoid issues.
+
+🎯 Simple Operators You Must Know
+Operator	Meaning	Example	Matches
+^	Line starts with	^#	# This is a comment
+$	Line ends with	mail$	user = mail
+.	Any one character	c.t	cat, cut, c1t
+*	Zero or more of previous	let*	le, let, letttt
++	One or more of previous	0+	0, 00, 000000
+\	Escape a special char	\.	Matches a real .
+
+📌 Rule:
+^ = Beginning of line
+
+$ = End of line
+
+Think:
+
+"Carrot ^ at the start, Dollar $ at the end."
+
+🧪 Simple Examples (with real use)
+✅ 1. Find lines that start with a comment (#)
+bash
+Copy
+Edit
+grep '^#' file.txt
+🧠 ^# → “Lines that begin with a pound sign”
+
+❌ 2. Find non-commented lines (active settings)
+bash
+Copy
+Edit
+grep -v '^#' file.txt
+🧠 -v → “Invert” → show lines not starting with #
+
+✅ 3. Find lines that end with 7
+bash
+Copy
+Edit
+grep -w '7$' file.txt
+🧠 $ → ends with
+🧠 -w → whole word only
+✅ Matches: max_days 7
+❌ Won’t match: days=777
+
+✅ 4. Find lines that end with the word mail
+bash
+Copy
+Edit
+grep 'mail$' file.txt
+✅ 5. Match any one character (like cat, cut)
+bash
+Copy
+Edit
+grep 'c.t' file.txt
+🧠 . → any 1 character
+
+✅ Matches: cat, cut, c1t
+❌ Doesn't match: ct
+
+🚫 Want to search a real dot (.)?
+Use:
+
+bash
+Copy
+Edit
+grep '\.' file.txt
+🧠 \. → escapes the dot to mean a real period, not "any character".
+
+✅ 6. Match zero or more of previous letter
+bash
+Copy
+Edit
+grep 'let*' file.txt
+✅ Matches: le, let, letttt
+🧠 * = optional or repeated character before it
+
+✅ 7. Match a pattern like /anything/ using .*
+bash
+Copy
+Edit
+grep '/.*/' file.txt
+🧠 . = any character
+🧠 * = any number of them
+→ So .* = “anything in between”
+
+✅ Matches: /test/, /api/v1/, /abc123/
+
+🚫 What if you want "1 or more" instead of "zero or more"?
+Use +
+
+bash
+Copy
+Edit
+grep '0\+' file.txt
+🧠 \+ = One or more of the previous character
+✅ Matches: 0, 0000, 000000
+❌ Doesn’t match: lines with no 0
+
+🧠 Bonus Tip: Use Extended Regex for cleaner commands
+By default, grep uses basic regex, which needs backslashes.
+
+Use -E to enable Extended regex:
+
+bash
+Copy
+Edit
+grep -E '0+' file.txt
+✅ No need to escape +, ?, | anymore
+
+🧠 Easy-to-Remember Cheats
+Want to...	Use this
+Start of line	^text
+End of line	text$
+Match any 1 character	.
+Match 0 or more	*
+Match 1 or more	+ (use \+ without -E)
+Match exact word	-w
+Exclude matches	-v
+Color results	--color
+Use extended regex	grep -E
+
