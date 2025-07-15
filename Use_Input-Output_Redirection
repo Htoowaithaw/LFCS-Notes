@@ -1,0 +1,161 @@
+🔄 Linux Input & Output Redirection + Pipes
+🧠 1. What is Redirection?
+By default, Linux programs:
+
+Read input from: stdin (keyboard)
+
+Send output to: stdout (your screen)
+
+Send errors to: stderr (also screen)
+
+We can redirect any of these to/from files or programs.
+
+📤 Output Redirection
+✅ Overwrite output to a file:
+bash
+Copy
+Edit
+command > file.txt
+Replaces old content
+
+Example:
+
+bash
+Copy
+Edit
+sort names.txt > sorted.txt
+✅ Append output to a file:
+bash
+Copy
+Edit
+command >> file.txt
+Keeps old content, adds new below
+
+📌 Standard Output vs. Error Output
+Descriptor	Name	Symbol	Example
+1	stdout	1>	command 1> out.txt
+2	stderr	2>	command 2> error.txt
+
+🚫 Redirect Errors to /dev/null (black hole)
+bash
+Copy
+Edit
+command 2> /dev/null
+Hides all warnings and errors
+
+📥 Input Redirection
+✅ Read input from a file
+bash
+Copy
+Edit
+command < input.txt
+Example:
+
+bash
+Copy
+Edit
+sort < names.txt
+🧾 Summary of Redirection
+Task	Symbol	Example
+Redirect stdout	>	ls > list.txt
+Append stdout	>>	echo "Done" >> log.txt
+Redirect stderr	2>	grep something file 2> error.log
+Redirect both stdout and stderr	> file 2>&1	command > all.txt 2>&1
+Redirect stdin	<	sort < unsorted.txt
+Discard stderr	2> /dev/null	grep root /etc/* 2> /dev/null
+
+📬 Here Document (Multi-line input)
+bash
+Copy
+Edit
+command <<EOF
+line 1
+line 2
+EOF
+Use any word instead of EOF (e.g. END, INPUT)
+
+Example:
+
+bash
+Copy
+Edit
+cat <<EOF
+Hello
+Multiline Input
+EOF
+📮 Here String (Single-line input)
+bash
+Copy
+Edit
+command <<< "your text here"
+Example:
+
+bash
+Copy
+Edit
+bc <<< "5+3"
+🧪 Combine grep + sort + column (with Pipe)
+Problem: Too many lines → unreadable output
+Solution: Chain commands using |
+bash
+Copy
+Edit
+grep -v '^#' config.txt | sort | column -t
+Symbol	Meaning
+`	`
+
+Each program:
+
+Reads from the left
+
+Processes the data
+
+Passes it to the program on the right
+
+🧪 Practice Exercise (Hands-On)
+🧰 Create test files
+bash
+Copy
+Edit
+echo -e "banana\napple\ncarrot" > list.txt
+🔽 Sort with redirection
+bash
+Copy
+Edit
+sort list.txt > sorted.txt
+cat sorted.txt
+🔁 Append logs
+bash
+Copy
+Edit
+echo "Backup complete" >> logs.txt
+🧪 Try redirecting errors
+bash
+Copy
+Edit
+ls /fakepath 2> error.txt
+💡 View everything (output + error)
+bash
+Copy
+Edit
+grep something file > all.txt 2>&1
+🧪 Use Here String
+bash
+Copy
+Edit
+bc <<< "4 * 25"
+🧪 Use Pipe
+bash
+Copy
+Edit
+cat list.txt | sort | column
+🧠 TL;DR – Power Recap
+Symbol	Function
+>	Redirect stdout (overwrite)
+>>	Redirect stdout (append)
+2>	Redirect stderr
+&> or > file 2>&1	Redirect all output
+<	Redirect stdin
+`	`
+<<<	Here String
+<<EOF	Here Document
