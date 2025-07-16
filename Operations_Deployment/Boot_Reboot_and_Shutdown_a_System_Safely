@@ -1,0 +1,45 @@
+Rebooting and Shutting Down Linux Systems
+1. Reboot and Shutdown (Basic Commands)
+systemctl reboot
+Reboots the system (requires root privileges).
+
+systemctl poweroff
+Powers off the system (also needs root privileges).
+
+If you're not logged in as root, use sudo:
+
+sudo systemctl reboot
+
+sudo systemctl poweroff
+
+2. Force Reboot or Shutdown (Only When Necessary)
+sudo systemctl reboot --force
+
+sudo systemctl poweroff --force
+
+Double force (dangerous, last resort):
+
+sudo systemctl reboot --force --force
+
+sudo systemctl poweroff --force --force
+
+This is equivalent to hitting the physical reset/power button — no cleanup, unsafe shutdown.
+
+3. Scheduled Reboot or Shutdown
+sudo shutdown 02:00
+Schedule shutdown at 2:00 AM.
+
+sudo shutdown +15
+Shutdown after 15 minutes.
+
+sudo shutdown -r 02:00
+Reboot at 2:00 AM.
+
+sudo shutdown -r +10 'Scheduled restart for kernel upgrade'
+Reboot after 10 minutes with a wall message shown to all logged-in users.
+
+4. Wall Message
+Add a message in single quotes at the end of the command to notify logged-in users:
+
+'Scheduled restart to upgrade Linux kernel'
+
