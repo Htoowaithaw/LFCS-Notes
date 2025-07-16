@@ -1,0 +1,122 @@
+🔐 SSL/TLS Certificates & OpenSSL in Linux
+📘 What is SSL/TLS?
+SSL = Secure Sockets Layer (obsolete)
+
+TLS = Transport Layer Security (current version)
+
+SSL term is still commonly used in tools, but we now create TLS certificates.
+
+🔒 Why Use Certificates?
+Problems solved by certificates:
+
+✅ Authentication
+
+Ensures the website is real (e.g., codecloud.com, not a fake site)
+
+✅ Encryption
+
+Protects data in transit (e.g., passwords, credit cards)
+
+🛠️ Tool: OpenSSL
+Powerful CLI utility for managing TLS certificates and cryptographic tasks
+
+Command: openssl
+
+bash
+Copy
+Edit
+openssl help
+man openssl
+man openssl-req
+man openssl-x509
+📜 Key Concepts
+Term	Meaning
+CSR	Certificate Signing Request (request CA to sign your cert)
+CA	Certificate Authority (trusted issuer like Google, Let’s Encrypt)
+X.509	Standard format for SSL/TLS certificates
+PEM	Base64-encoded certificate or key format (includes BEGIN/END lines)
+
+🔑 Step-by-Step: Generate Private Key + CSR
+bash
+Copy
+Edit
+openssl req -newkey rsa:2048 -keyout key.pem -out req.pem
+What it does:
+
+-newkey rsa:2048: Generate RSA private key
+
+-keyout key.pem: Save private key here
+
+-out req.pem: Save the CSR here
+
+You'll be prompted to enter:
+
+Prompt	Meaning
+Country Name (C)	e.g., US
+State/Province (ST)	e.g., California
+Locality (L)	e.g., San Francisco
+Organization (O)	e.g., CodeCloud Inc
+Organizational Unit (OU)	Optional
+Common Name (CN)	Domain name (e.g., codecloud.com)
+Email Address	Optional
+
+🧾 Self-Signed Certificate (for testing / internal use)
+bash
+Copy
+Edit
+openssl req -x509 -noenc -newkey rsa:4096 -days 365 -keyout myprivate.key -out mycertificate.crt
+Explanation:
+
+Option	Purpose
+-x509	Generate certificate (not CSR)
+-noenc	No encryption/password on key file
+-newkey rsa:4096	Use 4096-bit RSA key
+-days 365	Validity (1 year)
+-keyout	Save private key
+-out	Save certificate
+
+📂 File Types and Purpose
+File	Description
+key.pem / myprivate.key	Private key (keep safe)
+req.pem	CSR (send to CA)
+mycertificate.crt	Self-signed certificate
+
+🧪 Inspect a Certificate
+bash
+Copy
+Edit
+openssl x509 -in mycertificate.crt -text
+Outputs:
+
+Country (C)
+
+State (ST)
+
+Location (L)
+
+Org (O)
+
+Common Name (CN)
+
+Expiration (Not After)
+
+Issuer info
+
+🔁 Mental Trick
+Use Case	Subcommand
+Create certificate request	req
+Work with actual certificate	x509
+
+🧠 Tips
+Use /EXAMPLES inside man openssl-req or man openssl-x509 to quickly find usable commands
+
+Use self-signed certs for internal testing/dev only — not trusted publicly
+
+To get a trusted certificate:
+
+Generate CSR
+
+Send to CA (e.g., Let's Encrypt)
+
+Get back a signed certificate
+
