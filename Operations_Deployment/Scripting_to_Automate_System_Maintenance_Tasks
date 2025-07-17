@@ -1,0 +1,90 @@
+Linux Scripting and Bash Automation
+
+What is Bash?
+Bash is a command interpreter (shell) that runs when you log into Linux. It executes typed commands or reads them from scripts.
+
+What is a Script?
+A file containing a list of commands to be run by the shell in order.
+
+Creating a Script
+Create a file like: script.sh
+Add first line (shebang):
+#!/bin/bash → Tells Linux to use bash to run this script.
+
+Adding Comments
+Lines starting with # are comments. They're ignored by the interpreter but help explain the script.
+
+Script Example
+
+date → prints date and time
+
+cat /proc/version → shows Linux kernel version
+
+Use > or >> to redirect output to a log file
+Example: date >> /tmp/script.log
+
+Making Script Executable
+Use:
+chmod +x script.sh → allows execution
+Run with:
+./script.sh → runs from current directory
+
+Understanding the Dot
+./script.sh means: run script.sh in the current folder (e.g., /home/user/script.sh)
+
+Automating with Built-ins (if, test)
+Use if and test to check conditions.
+
+Example:
+Check if /tmp/archive.tar.gz exists:
+
+bash
+Copy
+Edit
+if test -f /tmp/archive.tar.gz; then
+    mv /tmp/archive.tar.gz /tmp/archive.tar.gz.old
+    tar czf /tmp/archive.tar.gz /etc/apt
+else
+    tar czf /tmp/archive.tar.gz /etc/apt
+fi
+This keeps both the new and previous backup files.
+
+Exit Status in Scripts
+
+Command returns 0 → success (true)
+
+Command returns non-zero → failure (false)
+Can be used in if statements to decide what to do next.
+
+Example: Use grep in condition
+
+bash
+Copy
+Edit
+if grep -q 5 /etc/default/grub; then
+    echo "Grub has timeout of 5 seconds"
+else
+    echo "Grub does not have timeout of 5 seconds"
+fi
+Real System Scripts
+Look in these folders for actual system scripts:
+
+/etc/cron.daily
+
+/etc/cron.weekly
+
+/etc/cron.monthly
+
+These show real-world examples of bash scripts used by the system.
+
+Learn More
+To dive deeper, study:
+
+Loops (for, while)
+
+Functions
+
+Variables
+
+These help you write smarter, reusable scripts.
+
