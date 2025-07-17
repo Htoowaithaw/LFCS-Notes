@@ -1,0 +1,110 @@
+📘 Linux System Boot Process with systemd Targets
+🖥️ What Happens During Boot?
+When Linux boots, it loads many programs.
+
+These programs are managed and ordered using systemd targets.
+
+A target is a collection of system services grouped for a specific purpose (e.g., graphical login, text mode, rescue, etc.).
+
+🔍 How to Check the Default Target
+Command:
+
+arduino
+Copy
+Edit
+systemctl get-default
+Example Output:
+
+Copy
+Edit
+graphical.target
+This means the system boots into a graphical environment by default.
+
+🧠 What is a Target?
+Each target file (like graphical.target) contains:
+
+A list of required services.
+
+The order in which they should run.
+
+This tells the system what to load and when to reach the desired environment.
+
+⚙️ Changing the Default Boot Target
+To boot into text mode (no GUI), use:
+
+pgsql
+Copy
+Edit
+sudo systemctl set-default multi-user.target
+The multi-user target:
+
+Loads system services and daemons.
+
+Supports multiple users.
+
+Enables networking.
+
+Skips the graphical interface (text-based only).
+
+Reboot the system to apply:
+
+nginx
+Copy
+Edit
+sudo reboot
+👨‍💻 After Reboot: Text-Based Login
+The login screen will now be a text console.
+
+You can still log in and use the system via terminal.
+
+🔄 Temporarily Switch to GUI Without Reboot
+To temporarily start the graphical interface:
+
+nginx
+Copy
+Edit
+sudo systemctl isolate graphical.target
+This launches the graphical UI.
+
+Does not change the default target.
+
+On next reboot, you'll go back to multi-user (text) mode.
+
+🧯 Special Recovery Targets
+1. emergency.target
+Loads minimal services.
+
+Mounts root file system as read-only.
+
+Useful for debugging system problems.
+
+Only the most essential system components are loaded.
+
+2. rescue.target
+Loads a few more services than emergency.
+
+Provides a root shell.
+
+Lets you:
+
+Fix system issues.
+
+Restore config files.
+
+Backup data without starting the full system.
+
+Requires root password to access.
+
+🔑 Note About Root Access
+To access rescue or emergency targets:
+
+A root password must be set.
+
+These targets drop you into a root shell.
+
+✅ Summary of Common systemd Targets
+Target	Description
+graphical.target	Full GUI environment
+multi-user.target	Text-based, networked, multi-user mode
+rescue.target	Minimal mode with root shell
+emergency.target	Bare minimum, read-only system
