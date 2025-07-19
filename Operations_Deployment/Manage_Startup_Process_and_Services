@@ -1,0 +1,143 @@
+===========================================================
+🖥️ LINUX STARTUP & SERVICE MANAGEMENT - SYSTEMD OVERVIEW
+===========================================================
+
+🔹 When Linux boots:
+- Essential applications start automatically.
+- Some apps start in a specific order (dependencies).
+- Crashed services can restart automatically.
+- All of this is managed by the "init system".
+
+-----------------------------------------------------------
+🧠 INIT SYSTEM & SYSTEMD
+-----------------------------------------------------------
+- The **init system** (initialization system) manages startup.
+- **systemd** is the most common init system today.
+  ▪ systemd is both:
+    - A tool suite (manages system processes)
+    - The actual init system binary itself
+
+- systemd uses **unit files** (text files) to manage services.
+
+Types of units:
+  ▪ service – manages daemons like sshd
+  ▪ socket – activates service based on socket activity
+  ▪ timer – schedules services
+  ▪ device, mount, target, path, etc.
+
+-----------------------------------------------------------
+🔧 SERVICE UNITS
+-----------------------------------------------------------
+- Text files that define how to manage a service's lifecycle.
+
+Common directives:
+  ▪ ExecStart – command to start the service
+  ▪ ExecReload – command to reload settings
+  ▪ Restart – behavior when service crashes
+
+Example:
+  `man systemd.service` → shows all available directives
+
+-----------------------------------------------------------
+📂 SSH EXAMPLE
+-----------------------------------------------------------
+- sshd is managed via a service unit file
+- View the file:
+  `cat /lib/systemd/system/ssh.service`
+
+- Restart policy:
+  If sshd crashes, systemd restarts it automatically.
+
+- Modify service file:
+  `sudo systemctl edit ssh.service`
+
+- Revert to default:
+  `sudo systemctl revert ssh.service`
+
+-----------------------------------------------------------
+📊 CHECK SERVICE STATUS
+-----------------------------------------------------------
+- `systemctl status ssh.service`
+  ▪ Shows if service is active/enabled
+  ▪ Shows PID, launch command, and log lines
+
+Status meanings:
+  ▪ active (running) – program is up and running
+  ▪ active (exited) – program ran once and exited normally
+  ▪ inactive / failed – stopped or failed to run
+
+-----------------------------------------------------------
+🛠️ SERVICE COMMANDS (systemctl)
+-----------------------------------------------------------
+
+Start / Stop:
+  ▪ `sudo systemctl start <service>`
+  ▪ `sudo systemctl stop <service>`
+
+Enable / Disable (for auto-start at boot):
+  ▪ `sudo systemctl enable <service>`
+  ▪ `sudo systemctl disable <service>`
+
+Check if enabled:
+  ▪ `systemctl is-enabled <service>`
+
+Enable & start now (combined):
+  ▪ `sudo systemctl enable --now <service>`
+
+Disable & stop now (combined):
+  ▪ `sudo systemctl disable --now <service>`
+
+Restart:
+  ▪ `sudo systemctl restart <service>`
+
+Reload (apply config changes without restart):
+  ▪ `sudo systemctl reload <service>`
+
+Reload if possible, else restart:
+  ▪ `sudo systemctl reload-or-restart <service>`
+
+-----------------------------------------------------------
+🔒 MASKING SERVICES
+-----------------------------------------------------------
+- Prevent a service from being started manually or automatically:
+  ▪ `sudo systemctl mask <service>`
+  ▪ e.g. `sudo systemctl mask atd.service`
+
+- Unmask to re-enable:
+  ▪ `sudo systemctl unmask <service>`
+
+-----------------------------------------------------------
+📦 AFTER INSTALLATION
+-----------------------------------------------------------
+Debian/Ubuntu:
+  ▪ Usually auto-enable and start services post-install.
+
+RedHat/CentOS:
+  ▪ May require manual steps:
+    `sudo systemctl enable --now <service>`
+
+-----------------------------------------------------------
+📄 FINDING SERVICES
+-----------------------------------------------------------
+- List all services (active/inactive, loaded/unloaded):
+  ▪ `systemctl list-units --type=service --all`
+
+- List all units (all types):
+  ▪ `systemctl list-units`
+
+Note:
+  ▪ Service names may vary by distro (e.g., Apache may be `apache2.service` or `httpd.service`).
+
+-----------------------------------------------------------
+📌 QUICK REFERENCE
+-----------------------------------------------------------
+Start:        sudo systemctl start <svc>
+Stop:         sudo systemctl stop <svc>
+Enable:       sudo systemctl enable <svc>
+Disable:      sudo systemctl disable <svc>
+Restart:      sudo systemctl restart <svc>
+Reload:       sudo systemctl reload <svc>
+Status:       systemctl status <svc>
+Mask:         sudo systemctl mask <svc>
+Unmask:       sudo systemctl unmask <svc>
+List All:     systemctl list-units --type=service --all
