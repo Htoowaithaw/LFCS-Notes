@@ -1,0 +1,151 @@
+===========================================================
+🛠️ CREATING A CUSTOM SYSTEMD SERVICE - PRACTICAL EXAMPLE
+===========================================================
+
+🔹 GOAL:
+Create a systemd service that:
+- Runs a custom shell script
+- Automatically restarts if it stops
+- Logs events to the system journal
+- Starts on boot
+
+-----------------------------------------------------------
+📄 STEP 1: CREATE A DUMMY APPLICATION
+-----------------------------------------------------------
+
+1. Create the shell script:
+
+    sudo vim /usr/local/bin/myapp.sh
+
+2. Paste this code:
+
+    #!/bin/bash
+    logger -t MyApp -p user.info "My App started"
+    sleep 5
+    logger -t MyApp -p user.err "My App crashed"
+    exit 0
+
+3. Make it executable:
+
+    sudo chmod +x /usr/local/bin/myapp.sh
+
+This simulates an app that runs for 5 seconds, logs startup and failure messages, then exits.
+
+-----------------------------------------------------------
+📄 STEP 2: UNDERSTAND SYSTEMD SERVICE FILES
+-----------------------------------------------------------
+
+- systemd uses `.service` unit files to manage services.
+- A basic service file includes 3 sections:
+  ▪ [Unit] – Description & dependencies
+  ▪ [Service] – How to start and manage the process
+  ▪ [Install] – When to start it (boot target)
+
+Useful man pages:
+  ▪ man systemd.service
+  ▪ man systemd.unit
+  ▪ man systemd.exec
+  ▪ man systemd.kill
+
+-----------------------------------------------------------
+📂 STEP 3: COPY A TEMPLATE SERVICE FILE
+-----------------------------------------------------------
+
+1. Use an existing service as a base:
+
+    sudo cp /lib/systemd/system/ssh.service /etc/systemd/system/myapp.service
+
+2. Edit the new file:
+
+    sudo vim /etc/systemd/system/myapp.service
+
+-----------------------------------------------------------
+📝 STEP 4: DEFINE THE SERVICE FILE
+-----------------------------------------------------------
+
+Final file: `/etc/systemd/system/myapp.service`
+
+    [Unit]
+    Description=My Custom App
+    After=network.target auditd.service
+
+    [Service]
+    ExecStartPre=/bin/echo "Preparing to start MyApp..."
+    ExecStart=/usr/local/bin/myapp.sh
+    Restart=always
+    RestartSec=1
+    KillMode=process
+    Type=simple
+
+    [Install]
+    WantedBy=multi-user.target
+
+Explanation:
+  ▪ After=... → Start after network is up
+  ▪ ExecStartPre=... → Runs just before main process
+  ▪ Restart=always → Restarts every time it exits
+  ▪ RestartSec=1 → 1s delay to prevent restart loops
+  ▪ Type=simple → For simple foreground scripts
+
+-----------------------------------------------------------
+📦 STEP 5: ENABLE & START THE SERVICE
+-----------------------------------------------------------
+
+1. Reload systemd:
+
+    sudo systemctl daemon-reexec
+    sudo systemctl daemon-reload
+
+2. Start the service:
+
+    sudo systemctl start myapp.service
+
+3. (Optional) Enable it at boot:
+
+    sudo systemctl enable myapp.service
+
+-----------------------------------------------------------
+🧪 STEP 6: CHECK LOGS & VERIFY BEHAVIOR
+-----------------------------------------------------------
+
+1. Monitor logs in real time:
+
+    journalctl -f
+
+You should see:
+  ▪ Startup info log
+  ▪ After 5s, a red error log
+  ▪ systemd restarts the app automatically
+
+2. Exit logs:
+
+    CTRL + C
+
+-----------------------------------------------------------
+📌 USEFUL TIPS
+-----------------------------------------------------------
+
+- Restart values:
+  ▪ no | on-success | on-failure | always
+
+- KillMode:
+  ▪ process → Kill only main process
+  ▪ control-group → Kill main + children
+
+- Type options:
+  ▪ simple → Foreground (default for scripts)
+  ▪ oneshot → Runs once and exits
+  ▪ forking → Daemonizes itself
+  ▪ notify → App tells systemd when ready
+
+- Use `/lib/systemd/system/` to find more examples
+
+-----------------------------------------------------------
+✅ SUMMARY
+-----------------------------------------------------------
+
+- systemd makes services easy to control and reliable.
+- This demo shows how to build, configure, and supervise your own.
+- Just a few lines in a `.service` file give you full lifecycle management.
+
+===========================================================
