@@ -1,0 +1,218 @@
+============================================================
+🔧 DIAGNOSING AND MANAGING PROCESSES IN LINUX
+============================================================
+
+🔹 GOAL:
+Understand how to inspect, filter, prioritize, and control processes in Linux using CLI tools like `ps`, `top`, `nice`, `renice`, `kill`, `pgrep`, `pkill`, `lsof`, and shell job controls.
+
+------------------------------------------------------------
+📄 PROCESS BASICS
+------------------------------------------------------------
+
+- A process is a running instance of a program.
+- It exists until the task completes or the program is closed.
+- Example: `ls` runs as a short-lived process to list files.
+- Long-lived process example: `sshd` (SSH daemon) runs continuously in the background on servers.
+
+------------------------------------------------------------
+📄 VIEWING PROCESSES
+------------------------------------------------------------
+
+🔸 PS (Process Status)
+
+1. View your own processes in the current terminal:
+   
+       ps
+
+2. Show all processes in a detailed user-oriented format:
+
+       ps aux
+
+   - `a` → show processes from all users.
+   - `x` → show processes not attached to terminals.
+   - `u` → display user-oriented output (CPU, memory, etc.).
+
+   📌 Tip: Remember "aux" = **"auxiliary"** to recall this combo.
+
+3. Understand key columns:
+   - `%CPU`: CPU usage (100 = one full core)
+   - `%MEM`: memory usage
+   - `START`: when process started
+   - `TIME`: total CPU time used
+   - `COMMAND`: how the process was started
+   - Brackets `[process]`: kernel-level processes
+
+🔸 TOP
+
+4. Live monitoring of running processes:
+
+       top
+
+   - Reorders to show most CPU-consuming processes first.
+   - Use arrows to navigate, `q` to quit.
+
+------------------------------------------------------------
+🔍 FILTERING PROCESSES
+------------------------------------------------------------
+
+🔸 By PID (Process ID)
+
+    ps u -p <PID>
+
+🔸 By Username
+
+    ps -U <username> -u
+
+🔸 By Name (using pgrep)
+
+    pgrep -a <process-name>
+
+    Example:
+
+        pgrep -a syslog
+
+    - `-a` shows command and arguments.
+
+------------------------------------------------------------
+⚙️ PROCESS PRIORITY: NICE & RENICE
+------------------------------------------------------------
+
+🔸 Niceness: Range from -20 (highest priority) to 19 (lowest).
+
+1. Launch a process with custom niceness:
+
+       nice -n <value> <command>
+
+   Example:
+
+       nice -n 11 bash
+
+2. Show nice values with:
+
+       ps lax
+
+   - Column `NI` shows niceness.
+   - Child processes inherit niceness from parent.
+
+3. Tree view of parent-child processes:
+
+       ps faux
+
+   - `f`: forest/tree view
+   - `u`: user format
+   - `x`: show all
+
+4. Change niceness of a running process:
+
+       renice <value> -p <PID>
+
+   Example:
+
+       renice 7 -p 12238
+
+5. Only root can lower niceness (increase priority):
+
+       sudo renice -12 -p <PID>
+
+------------------------------------------------------------
+🚦 SENDING SIGNALS TO PROCESSES
+------------------------------------------------------------
+
+🔸 Signals notify or control processes.
+
+1. List all signals:
+
+       kill -l
+
+2. Gracefully stop a process:
+
+       kill <PID>                # sends SIGTERM by default
+       kill -TERM <PID>
+
+3. Force kill (unrecoverable):
+
+       kill -KILL <PID>
+       kill -9 <PID>
+
+4. Reload config (e.g., for sshd):
+
+       sudo kill -HUP <PID>
+
+5. Check if signal was handled:
+
+       systemctl status sshd
+
+🔸 Send signals by name (using pkill):
+
+1. See which processes will be affected:
+
+       pgrep -a bash
+
+2. Kill all processes with name:
+
+       pkill -KILL bash
+
+   ⚠️ This can abruptly close your own terminal!
+
+------------------------------------------------------------
+🧰 BACKGROUND & FOREGROUND PROCESS CONTROL
+------------------------------------------------------------
+
+🔸 Pause with Ctrl+Z  
+🔸 Resume in foreground:
+
+       fg
+
+🔸 Resume in background:
+
+       bg
+
+🔸 List background/paused jobs:
+
+       jobs
+
+🔸 Start a background process:
+
+       sleep 300 &
+
+🔸 Resume specific job:
+
+       fg %1
+       bg %1
+
+⚠️ A paused job (via Ctrl+Z) will not make progress until resumed.
+
+------------------------------------------------------------
+📂 WHAT FILES A PROCESS IS USING
+------------------------------------------------------------
+
+🔸 Find open files used by a process:
+
+1. Find PID:
+
+       echo $$           # for current shell
+       pgrep bash        # example
+
+2. List open files:
+
+       sudo lsof -p <PID>
+
+3. Check if a file is used:
+
+       sudo lsof /path/to/file
+
+   - Always use `sudo` for full results (some files may be hidden otherwise).
+
+------------------------------------------------------------
+✅ SUMMARY
+------------------------------------------------------------
+
+- `ps aux` shows all user-space processes in detailed format.
+- `top` monitors live CPU/memory usage.
+- Use `nice` and `renice` to prioritize processes.
+- Use `kill`, `pkill`, and `pgrep` to manage or terminate processes.
+- Use `lsof` to inspect what files a process has open.
+- Use job control (Ctrl+Z, `bg`, `fg`, `jobs`) to manage processes in terminal.
+
+Process management is essential for system monitoring, troubleshooting, and performance tuning.
+============================================================
